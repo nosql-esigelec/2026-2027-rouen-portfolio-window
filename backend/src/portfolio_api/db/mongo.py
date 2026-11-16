@@ -10,14 +10,16 @@ from __future__ import annotations
 
 import asyncio
 
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+# from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
+from pymongo import AsyncMongoClient
+from pymongo.asynchronous.database import AsyncDatabase
 from portfolio_api.core.config import get_settings
 
-_client: AsyncIOMotorClient | None = None
+_client: AsyncMongoClient | None = None
 
 
-def get_mongo_db() -> AsyncIOMotorDatabase:
+def get_mongo_db() -> AsyncDatabase:
     """Retourne la base MongoDB (singleton). À compléter : créer le client Motor avec settings.mongo_url, retourner client[settings.mongo_db]."""
     global _client
     try:
@@ -35,11 +37,14 @@ def get_mongo_db() -> AsyncIOMotorDatabase:
             _client = None
             
     if _client is None:
-        _client = AsyncIOMotorClient(get_settings().mongo_url)
+        _client = AsyncMongoClient(get_settings().mongo_url)
     return _client[get_settings().mongo_db]
 
 
 
 async def close_mongo() -> None:
     """Ferme la connexion (appelé à l'arrêt de l'API)."""
+    if _client is not None:
+        _client.close()
+        _client = None
     return None
