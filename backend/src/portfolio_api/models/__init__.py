@@ -54,6 +54,3 @@ class Contact(BaseModel):
 
 
 # ── Contact ───────────────────────────────────────────────────────
-
-class Competence(BaseModel):
-    
