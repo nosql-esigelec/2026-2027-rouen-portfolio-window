@@ -50,4 +50,4 @@ Chaque membre de l'équipe dispose de sa branche dédiée et de son déploiement
 
 * **Akim :** https://portfolio-akim-iwke.vercel.app/ *(fork : https://github.com/idontknowwwwwww/portfolio-Akim/tree/main/frontends/frontend-idontknowwwwwww)*
 
-* **Bangaly :** 
+* **Bangaly :** *https://github.com/Bangesigelec/portfolio/tree/main/frontends/frontend-Bangesigelec*
