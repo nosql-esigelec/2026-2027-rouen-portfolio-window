@@ -14,7 +14,7 @@
 
 ## 2. Backend déployé & Validation des bases de données (MongoDB & Neo4j)
 
-* **API déployée (Vercel) :** https://portfolio-lucie-fawn.vercel.app
+* **API déployée (Vercel) :** https://portfolio-lucie-fawn.vercel.app/api/health
 
 * **Documentation interactive (Swagger / OpenAPI) :** https://portfolio-lucie-fawn.vercel.app/docs
 
@@ -41,6 +41,8 @@ Chaque membre de l'équipe dispose de sa branche dédiée et de son déploiement
 
 * **Clara (`claramasse4`) :** https://portfolio-frontend-claramasse4.vercel.app/#accueil *(branche : `front-clara`)*
 
-* **[Prénom Membre 2] :** `[À COMPLÉTER : URL Vercel]` *(branche : `[nom-branche-2]`)*
+* **Lucie (LucieEsigelec) :** https://portfoliolucie-frontend-psi.vercel.app/ *(fork : https://github.com/LucieEsigelec/portfolio_lucie)*
 
-* **[Prénom Membre 3] :** `[À COMPLÉTER : URL Vercel]` *(branche : `[nom-branche-3]`)*
+* **Akim :** https://portfolio-akim-iwke.vercel.app/ *(fork : https://github.com/idontknowwwwwww/portfolio-Akim)*
+
+* **Bangaly :** 
