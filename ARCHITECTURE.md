@@ -17,29 +17,65 @@ L'image reste modifiable : rouvrez-la dans Excalidraw (ou dans VS Code avec l'ex
 
 ```mermaid
 flowchart LR
-    F["Frontends (1 par membre)"] -->|HTTP JSON| API["FastAPI - backend d'équipe"]
-    API -->|"personne, projets, compétences"| M[("MongoDB")]
-    API -->|"graphe de compétences, similarités projets"| N[("Neo4j")]
-    
+    subgraph Clients
+        F["Frontends indépendants<br/>(un par membre)"]
+    end
+    subgraph Backend["FastAPI - backend d'équipe"]
+        R["Routeurs API"]
+        S["Services<br/>(règles métier, assemblage)"]
+        Repo["Repositories<br/>(accès aux données)"]
+        R --> S --> Repo
+    end
+    F -->|"HTTP"| R
+    Repo -->|"profils, projets, compétences<br/>CRUD et agrégations"| M[("MongoDB")]
+    Repo -->|"compétences, usages,<br/>similarités et traversées"| N[("Neo4j")]
+    Seed["Seed depuis data/"] --> M
+    Seed --> N
 ```
 
 **MongoDB** : Elle stocke l'ensemble des données descriptives et éditoriales du portfolio dans trois collections **(personne, projets, competences)** : profils des membres avec leurs formations et expériences imbriquées, fiches détaillées des projets et référentiel des compétences. Elle assure également les calculs statistiques via des pipelines d'agrégation MQL.
 
 **Neo4j** : Elle modélise le graphe de connaissances reliant les réalisations **(:Projet, :Experience, :Formation)** aux technologies **(:Competence)** via la relation **[:UTILISE]**, ainsi que les similarités pondérées entre projets **([:SIMILAIRE {score}])**. Elle permet de déduire les compétences réelles d'un candidat, de tracer les preuves d'utilisation d'une compétence et de recommander des projets proches.
+
+### 1.1 Couches applicatives et flux
+
+Chaque frontend est une application cliente indépendante : il appelle l'API d'équipe et n'accède jamais directement aux bases. FastAPI expose les routeurs `personnes`, `projets` et `competences`; les modèles Pydantic définissent les formes d'entrée et de sortie.
+
+Une route délègue le traitement à un **service**, qui applique les règles métier et assemble si nécessaire des données provenant des deux bases. Les **repositories** portent les requêtes MongoDB et Cypher; les modules `db/` fournissent les connexions partagées. Par exemple, le détail d'un projet combine son document MongoDB avec ses compétences et projets similaires issus de Neo4j.
+
+### 1.2 Exécution locale
+
+`docker compose` démarre MongoDB 7 et Neo4j 5 avec des volumes persistants; il ne démarre pas l'API ni les frontends. L'API FastAPI se lance séparément sur le port **8000** (documentation Swagger : `/docs`). Les ports exposés par les bases sont **27018** pour MongoDB, **7475** pour Neo4j Browser et **7688** pour Bolt. Les URL, noms de bases, identifiants et origines CORS sont configurables dans `.env`; `just seed` peuple les bases depuis `data/`.
+
 ## 2. Les requêtes à servir
 
 | # | Besoin (vu par un recruteur) | Route API | Base(s) interrogée(s) |
 |---|---|---|---|
 | R1 | Profil + timeline (expériences, formations) d'un candidat | `GET /api/personnes/{slug}` | MongoDB + Neo4j |
 | R2 | Projets du portfolio, filtrables par compétence | `GET /api/projets?competence={slug}` | MongoDB |
-| R3 | Statistiques d'un candidat par compétence | `GET /api/projets/stats/competences & GET /api/competences/stats/categories` | MongoDB |
-| R4 | Projets similaires à un projet | `GET /api/graph/projets/{slug}/similaires` | Neo4j |
-| R5 | Graphe de compétences d'un candidat | `GET /api/competences/stats/top` | Neo4j |
-| R6 | Détail complet d'un projet (architecture, médias, métriques) | `GET /api/projets/{slug}` | MongoDB + Neo4j |
+| R3 | Statistiques globales des projets par compétence et des compétences par catégorie | `GET /api/projets/stats/competences & GET /api/competences/stats/categories` | MongoDB |
+| R4 | Projets similaires à un projet existant | `GET /api/graph/projets/{slug}/similaires` | MongoDB + Neo4j |
+| R5 | Top des compétences les plus mobilisées dans le portfolio | `GET /api/competences/stats/top` | Neo4j |
+| R6 | Détail d'un projet, compétences et recommandations | `GET /api/projets/{slug}` | MongoDB + Neo4j |
 | R7 | Preuves d'une compétence (projets et expériences où elle a été appliquée) | `GET /api/competences/{slug}` | Neo4j + MongoDB|
-| R8 | Liste des diplômes et certifications d'un candidat | `GET /api/personnes/{slug}`  | MongoDB |
+| R8 | Liste des formations et diplômes d'un candidat | `GET /api/personnes/{slug}` | MongoDB |
+| R9 | Liste des candidats pour la page d'accueil | `GET /api/personnes` | MongoDB |
+| R10 | Référentiel complet des compétences pour le catalogue et les filtres | `GET /api/competences` | MongoDB |
 
 > Le slug d'un projet est récupéré depuis la liste des projets, le visiteur n'a pas à le connaître.
+
+### 2.1 Routes de santé et d'administration
+
+`GET /api/health` vérifie que l'API répond. Les routes de lecture ci-dessus sont complétées par les opérations d'administration suivantes; les écritures sur les projets et compétences mettent à jour MongoDB et leur représentation dans Neo4j.
+
+| Méthode et route | Effet |
+|---|---|
+| `POST /api/projets` | Crée un document projet et synchronise son nœud `:Projet` et ses relations `:UTILISE`. |
+| `PATCH /api/projets/{slug}` | Met à jour les champs fournis puis resynchronise le nœud et ses relations `:UTILISE`. |
+| `DELETE /api/projets/{slug}` | Supprime le document MongoDB et détache/supprime le nœud projet Neo4j. |
+| `POST /api/competences` | Crée le document compétence et synchronise le nœud `:Competence`. |
+| `PATCH /api/competences/{slug}` | Met à jour les champs fournis puis synchronise le nom et la catégorie du nœud Neo4j. |
+| `DELETE /api/competences/{slug}` | Supprime le document MongoDB et détache/supprime le nœud compétence Neo4j et ses relations. |
 
 ## 3. Modèle MongoDB
 
@@ -250,6 +286,8 @@ CREATE CONSTRAINT competence_slug_unique IF NOT EXISTS FOR (c:Competence) REQUIR
 Dans MongoDB **(ProjetRepository.delete_mongo)** : Suppression du document dans la collection projets via **delete_one({"slug": slug})**. Les documents référencés dans competences et personne restent intacts.
 
 Dans Neo4j **(ProjetRepository.delete_projet_graph)** : Exécution de **MATCH (pr:Projet {slug: $slug})** **DETACH DELETE pr**. L'instruction DETACH DELETE supprime automatiquement le nœud **(:Projet)** ainsi que toutes ses relations **(UTILISE, SIMILAIRE, DANS_LE_CADRE_DE)** afin d'éviter tout arc orphelin dans le graphe.
+
+**Synchronisation et reprise** : MongoDB conserve les données éditoriales de référence; Neo4j en est une représentation orientée graphe, alimentée par les opérations d'écriture. Ces écritures s'effectuent successivement dans les deux bases, sans transaction distribuée : une panne entre les deux opérations peut donc laisser les données désynchronisées. Après une telle erreur, vérifier les deux côtés puis rejouer ou corriger la synchronisation avant de considérer l'opération terminée.
 
 ## 6. Répartition du travail
 
