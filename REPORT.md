@@ -43,7 +43,7 @@
 
 Chaque membre de l'équipe dispose de sa branche dédiée et de son déploiement individuel :
 
-* **Clara (`claramasse4`) :** https://portfolio-frontend-claramasse4.vercel.app/#accueil *(branche : `front-clara`)*
+* **Clara (`claramasse4`) :** https://portfolio-frontend-claramasse4.vercel.app/#accueil *(branche : `front-clara` , fork : https://github.com/claramasse4/portfolio/tree/main/frontends/frontend-claramasse4)*
 
 * **Lucie (LucieEsigelec) :** https://portfoliolucie-frontend-psi.vercel.app/ *(fork : https://github.com/LucieEsigelec/portfolio_lucie/tree/main/frontends/frontend-LucieEsigelec)*
 
