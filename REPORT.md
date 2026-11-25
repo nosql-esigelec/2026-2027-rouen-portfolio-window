@@ -18,6 +18,8 @@
 
 * **Documentation interactive (Swagger / OpenAPI) :** https://portfolio-lucie-fawn.vercel.app/docs
 
+* **Video de test de l'API : ** C:\Users\lucie\2026-2027-rouen-portfolio-window\video get projet.mp4
+
 ### Vérification de la connexion aux BDDs
 
 1. **Via l'endpoint de santé en ligne (recommandé) :**
@@ -25,6 +27,8 @@
    * **Healthcheck :** https://portfolio-lucie-fawn.vercel.app/api/health *(vérifie en direct l'état de connexion à MongoDB Atlas et Neo4j Aura)*
 
    * Vous pouvez également tester directement les requêtes API depuis l'interface Swagger : https://portfolio-lucie-fawn.vercel.app/docs *(ex. `GET /api/projects`, `GET /api/skills`, etc.)*.
+
+   <video src="./video%20get%20projet.mp4" controls width="100%"></video>
 
 2. **Via le script de vérification en local (avec le fichier `.env` configuré) :**
 
