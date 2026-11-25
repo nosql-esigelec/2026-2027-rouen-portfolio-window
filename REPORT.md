@@ -18,7 +18,6 @@
 
 * **Documentation interactive (Swagger / OpenAPI) :** https://portfolio-lucie-fawn.vercel.app/docs
 
-* **Video de test de l'API : ** C:\Users\lucie\2026-2027-rouen-portfolio-window\video get projet.mp4
 
 ### Vérification de la connexion aux BDDs
 
