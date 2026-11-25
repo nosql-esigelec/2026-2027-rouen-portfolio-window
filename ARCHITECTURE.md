@@ -1,4 +1,4 @@
-# 🧠 ARCHITECTURE - Équipe `TODO-nom-equipe`
+# 🧠 ARCHITECTURE - Équipe Window
 
 > **Jalon 1** : ce document est votre **spécification**. Il doit être **complet** : toute l'équipe va coder dessus.
 > Toutes les sections sont obligatoires. Remplacez **tous** les `TODO` (la CI « Livrables » les compte).
@@ -20,85 +20,106 @@ flowchart LR
     F["Frontends (1 par membre)"] -->|HTTP JSON| API["FastAPI - backend d'équipe"]
     API -->|"personne, projets, compétences"| M[("MongoDB")]
     API -->|"graphe de compétences, similarités projets"| N[("Neo4j")]
-    %% TODO : complétez / corrigez ce schéma selon VOS choix
+    
 ```
 
-TODO : en 3 à 5 lignes, le rôle de chaque base dans votre portfolio.
-Voici un texte prêt à être copié-collé pour remplir votre **TODO** dans votre rapport :
+**MongoDB** : Elle stocke l'ensemble des données descriptives et éditoriales du portfolio dans trois collections **(personne, projets, competences)** : profils des membres avec leurs formations et expériences imbriquées, fiches détaillées des projets et référentiel des compétences. Elle assure également les calculs statistiques via des pipelines d'agrégation MQL.
 
-**MongoDB :** Elle stocke l'ensemble des données riches, textuelles et administratives du portfolio (profil personnel, formations, expériences et fiches projets au format Markdown). Grâce à une stratégie combinant embedding et referencing par *slug*, elle garantit un accès direct et rapide en lecture pour restituer les contenus éditoriaux et les métadonnées.
-**Neo4j :** Elle gère le graphe de connaissances centré sur les relations structurelles entre les projets et les compétences (*skills*). Elle prend en charge la logique métier avancée, telle que la recommandation de projets similaires par traversée de graphe et l'analyse de la centralité des technologies.
-
+**Neo4j** : Elle modélise le graphe de connaissances reliant les réalisations **(:Projet, :Experience, :Formation)** aux technologies **(:Competence)** via la relation **[:UTILISE]**, ainsi que les similarités pondérées entre projets **([:SIMILAIRE {score}])**. Elle permet de déduire les compétences réelles d'un candidat, de tracer les preuves d'utilisation d'une compétence et de recommander des projets proches.
 ## 2. Les requêtes à servir
 
 | # | Besoin (vu par un recruteur) | Route API | Base(s) interrogée(s) |
 |---|---|---|---|
-| R1 | Profil + timeline (expériences, formations) d'un candidat | `GET /api/personne/{slug}` | MongoDB |
-| R2 | Projets du portfolio, filtrables par compétence | `GET /api/projets?competence=...` | MongoDB |
-| R3 | Statistiques d'un candidat par compétence | `GET /api/personne/{slug}/stats` | MongoDB |
+| R1 | Profil + timeline (expériences, formations) d'un candidat | `GET /api/personnes/{slug}` | MongoDB + Neo4j |
+| R2 | Projets du portfolio, filtrables par compétence | `GET /api/projets?competence={slug}` | MongoDB |
+| R3 | Statistiques d'un candidat par compétence | `GET /api/projets/stats/competences & GET /api/competences/stats/categories` | MongoDB |
 | R4 | Projets similaires à un projet | `GET /api/graph/projets/{slug}/similaires` | Neo4j |
-| R5 | Graphe de compétences d'un candidat | `GET /api/graph/competences/{slug}` | Neo4j |
-| R6 | Détail complet d'un projet (architecture, médias, métriques) | `GET /api/projets/{slug}` | MongoDB |
-| R7 | Preuves d'une compétence (projets et expériences où elle a été appliquée) |  | Neo4j (MongoDB)|
-| R8 | Liste des diplômes et certifications d'un candidat |  | MongoDB |
+| R5 | Graphe de compétences d'un candidat | `GET /api/competences/stats/top` | Neo4j |
+| R6 | Détail complet d'un projet (architecture, médias, métriques) | `GET /api/projets/{slug}` | MongoDB + Neo4j |
+| R7 | Preuves d'une compétence (projets et expériences où elle a été appliquée) | `GET /api/competences/{slug}` | Neo4j + MongoDB|
+| R8 | Liste des diplômes et certifications d'un candidat | `GET /api/personnes/{slug}`  | MongoDB |
 
 > Le slug d'un projet est récupéré depuis la liste des projets, le visiteur n'a pas à le connaître.
 
 ## 3. Modèle MongoDB
 
-### 3.1 Collection `personne` - pattern TODO (*Embedding* ? *Referencing* ?)
+### 3.1 Collection `personne` - pattern *Embedding* 
 
 ```json
-TODO : un document d'exemple complet
+
 
 {
-        ObjectId _id PK
-        string prenom
-        string nom
-        string titre
-        string bio
-        object contact "email, github, linkedin..."
-        array formations "école, diplôme, années..."
-        array experiences "entreprise, poste, missions..."
+  "slug": "bruce-wayne",
+  "prenom": "Bruce",
+  "nom": "Wayne",
+  "titre": "Ingénieur Big Data & IA",
+  "bio": "Spécialisé en architectures distribuées, machine learning et bases de données polyglottes.",
+  "contacts": {
+    "email": "bruce.wayne@wayne-ent.com",
+    "github": "https://github.com/bwayne",
+    "linkedin": "https://linkedin.com/in/bruce-wayne"
+  },
+  "formations": [
+    {
+      "id": "form-esigelec-2024",
+      "ecole": "ESIGELEC Rouen",
+      "diplome": "Diplôme d'Ingénieur - Big Data & IA",
+      "debut": "2024-09",
+      "fin": "2027-04",
+      "competences": ["python", "mongodb", "neo4j"]
     }
+  ],
+  "experiences": [
+    {
+      "id": "exp-wayne-2026",
+      "poste": "Data Engineer",
+      "structure": "Wayne Enterprises",
+      "type": "Stage",
+      "debut": "2026-04",
+      "fin": "2026-09",
+      "missions": [
+        "Conception d'un pipeline de traitement de données",
+        "Développement d'API analytiques sous FastAPI"
+      ],
+      "competences": ["python", "mongodb", "docker"]
+    }
+  ],
+  "competences": ["python", "mongodb", "neo4j", "docker"]
+}
 ```
 
 
 
 
-### 3.2 Collection `projets` - pattern TODO
+### 3.2 Collection projets - pattern *Hybride*
 
 ```json
-TODO : un document d'exemple complet
+
 
 {
-        ObjectId _id PK
-        string slug UK "Clé pivot unique"
-        string titre
-        string resume
-        string contenu_md "Format Markdown complet"
-        object liens "github, demo"
-        object metriques "performances, stats"
-        array skills_slugs "['python', 'mongodb', ...]"
-        string date_realisation
-
+  "slug": "rouen-portfolio",
+  "titre": "Portfolio Hybride MongoDB & Neo4j",
+  "description": "Application web full-stack combinant stockage documentaire et moteur de recommandation graphe.",
+  "date_realisation": "2026",
+  "contexte_id": "form-esigelec-2024",
+  "personne_slugs": ["bruce-wayne"],
+  "skills_slugs": ["python", "fastapi", "mongodb", "neo4j"]
 }
    
 ```
 
-### 3.3 Collection `compétences` - pattern 
+### 3.3 Collection `compétences` - pattern *Referencing*
 
 ```json
 
 {
-        ObjectId _id PK
-        string slug UK "Clé pivot unique"
-        string nom
-        string categorie "Langage, BDD, DevOps..."
-        string niveau_maitrise
-        string icone_url
-        int ordre_affichage
-    }
+  "slug": "python",
+  "nom": "Python",
+  "categorie": "Langages",
+  "niveau": "Avancé",
+  "mots_cles": ["fastapi", "pandas", "backend", "data"],
+  "ordre_affichage": 1
+}
  
 ```
 
@@ -107,11 +128,11 @@ TODO : un document d'exemple complet
 
 ---
 
-**personne :** Choix du pattern d'***Embedding*** (imbrication). Les listes `formations` et `experiences` possèdent une **cardinalité bornée** (un candidat a un nombre fini et gérable d'expériences). Cela permet de récupérer l'intégralité du profil et de sa timeline en **une seule requête** (optimisant la route `GET /api/personne/{slug}`), sachant que la fréquence de mise à jour de ces données est très faible.
+**personne :** Choix du pattern d'***Embedding*** (imbrication). Les listes `formations` et `experiences` possèdent une **cardinalité bornée** (un candidat a un nombre fini et gérable d'expériences). Cela permet de récupérer l'intégralité du profil et de sa timeline en **une seule requête** (optimisant la route `GET /api/personnes/{slug}`), sachant que la fréquence de mise à jour de ces données est très faible.
 
 ---
 
-**Projets :** Choix d'un pattern ***Hybride***. Le contenu lourd et textuel (`contenu_md`, métriques) est stocké directement dans le document pour un affichage rapide, tandis que les compétences sont reliées via leurs identifiants (`skills_slugs`). Cela permet de maintenir la liaison applicative avec le graphe Neo4j tout en évitant les jointures complexes en base.
+**Projets :** Choix d'un pattern ***Hybride***. Le contenu lourd et textuel (`description, date_realisation, contexte_id, personne_slugs et skills_slugs`) est stocké directement dans le document pour un affichage rapide, tandis que les compétences sont reliées via leurs identifiants (`skills_slugs`). Cela permet de maintenir la liaison applicative avec le graphe Neo4j tout en évitant les jointures complexes en base.
 
 ---
 
@@ -121,12 +142,29 @@ TODO : un document d'exemple complet
 
 | Collection | Index | Requête servie (R#) |
 |---|---|---|
-| TODO | TODO | TODO |
+personne|	{ "slug": 1 } (unique)|	R1, R8
+projets|	{ "slug": 1 } (unique)|	R6
+projets|	{ "skills_slugs": 1 } (multikey)|	R2, R3
+projets	|{ "date_realisation": -1 }	|R2
+competences	|{ "slug": 1 } (unique)	|R6, R7
+competences|	{ "ordre_affichage": 1 }|	R3, R7
 
 ### 3.5 Pipeline d'agrégation clé (R3)
 
 ```javascript
-TODO : db.projets.aggregate([ ... ])
+db.projets.aggregate([
+  { $unwind: "$skills_slugs" },
+  {
+    $group: {
+      _id: "$skills_slugs",
+      nb_projets: { $sum: 1 } } }, {$project: {
+      _id: 0,
+      competence_slug: "$_id",
+      nb_projets: 1
+    }
+  },
+  { $sort: { nb_projets: -1, competence_slug: 1 } }
+])
 ```
 
 ## 4. Modèle Neo4j
@@ -136,65 +174,87 @@ TODO : db.projets.aggregate([ ... ])
 ```mermaid
 graph TD
     %% Nœuds
-    Projets["Projets"] -->|"(utilise)"| Compétences["Compétences"]
-    Expériences["Expériences"] -->|"(utilise)"| Compétences
-    Formations["Formations"] -->|"(utilise)"| Compétences
-    Formations -->|"(dans le cadre de)"| Projets
-    Expériences -->|"(dans le cadre de)"| Projets
-    Projets -->|"(similaire)"| Projets
+    Projets(["Projet"])
+    Experiences(["Experience"])
+    Formations(["Formation"])
+    Competences(["Competence"])
+
+    %% Relations
+    Projets -->|"(UTILISE)"| Competences
+    Experiences -->|"(UTILISE)"| Competences
+    Formations -->|"(UTILISE)"| Competences
+    Formations -->|"(DANS_LE_CADRE_DE)"| Projets
+    Experiences -->|"(DANS_LE_CADRE_DE)"| Projets
+    Projets -->|"(SIMILAIRE {score})"| Projets
 ```
 
 | Label | Propriétés | Clé unique |
 |---|---|---|
 | Projets | slug, titre, annee | slug |
-| Expériences | slug, poste, entreprise | slug ou id |
-| Formations | slug, diplome, ecole | slug ou id |
-| Compétences | slug, nom, categorie | id |
+| Expériences | slug, poste, entreprise personne| slug ou id |
+| Formations | slug, diplome, ecole personne| slug ou id |
+| Compétences | slug, nom, categorie | slug |
 
 | Relation | De → Vers | Propriétés | Pourquoi ce sens |
 |---|---|---|---|
-| UTILISE | Projet → Skill | / | lier les réalisations et le parcours aux technologies maîtrisées pour l'analyse de compétences |
-| UTILISE | Formation → Skill | / | lier les réalisations et le parcours aux technologies maîtrisées pour l'analyse de compétences |
-| UTILISE | Experience → Skill | / | lier les réalisations et le parcours aux technologies maîtrisées pour l'analyse de compétences |
-| DANS LE CADRE DE | Expérience → Projet | / | rattacher un projet à son cadre d'origine |
-| DANS LE CADRE DE | Formation → Projet | / | rattacher un projet à son cadre d'origine |
-| SIMILAIRE | Projet → Projet | score de similarité | Relie deux projets proches par leurs compétences communes |
+| UTILISE | Projet → Competence | / | Relie chaque projet aux technologies qu'il mobilise |
+| UTILISE | Expérience → Competence | / | Relie chaque expérience professionnelle aux technologies appliquées |
+| UTILISE | Formation → Competence | / | Relie chaque formation académique aux compétences acquises |
+| DANS LE CADRE DE | Expérience → Projet | / | Rattache un projet à l'expérience professionnelle dans laquelle il a été réalisé |
+| DANS LE CADRE DE | Formation → Projet | / | Rattache un projet à la formation académique dans laquelle il a été réalisé |
+| SIMILAIRE | Projet → Projet | score | Relie deux projets proches pondérés par leur score de similarité |
 
 ### 4.2 Les 3 requêtes Cypher clés
 
 ```cypher
 // R4 - projets similaires
-TODO
+MATCH (projet:Projet {slug: $slug})-[r:SIMILAIRE]-(similaire:Projet)
+RETURN similaire.slug AS slug, similaire.titre AS titre,
+       similaire.annee AS annee, r.score AS score
+ORDER BY score DESC, titre
+LIMIT $limit;
 
 // R5 - graphe de compétences d'un candidat
-TODO
+MATCH (ctx)-[:UTILISE]->(c:Competence)
+WHERE (ctx:Experience OR ctx:Formation) AND ctx.personne = $slug
+RETURN DISTINCT c.slug AS slug, c.nom AS nom, c.categorie AS categorie
+ORDER BY c.categorie, c.nom;
 
 // Compétences communes aux membres de l'équipe (ou requête de votre choix)
-TODO
+MATCH (ctx)-[:UTILISE]->(c:Competence {slug: $slug})
+WHERE ctx:Projet OR ctx:Experience OR ctx:Formation
+RETURN DISTINCT labels(ctx)[0] AS type,
+       coalesce(ctx.slug, ctx.id) AS ref,
+       coalesce(ctx.titre, ctx.poste, ctx.diplome) AS titre;
 ```
 
 ### 4.3 Contraintes
 
 ```cypher
-TODO : CREATE CONSTRAINT ... IF NOT EXISTS
+CREATE CONSTRAINT projet_slug_unique IF NOT EXISTS FOR (p:Projet) REQUIRE p.slug IS UNIQUE;
+CREATE CONSTRAINT experience_id_unique IF NOT EXISTS FOR (e:Experience) REQUIRE e.id IS UNIQUE;
+CREATE CONSTRAINT formation_id_unique IF NOT EXISTS FOR (f:Formation) REQUIRE f.id IS UNIQUE;
+CREATE CONSTRAINT competence_slug_unique IF NOT EXISTS FOR (c:Competence) REQUIRE c.slug IS UNIQUE;
 ```
 
 ## 5. Cohérence entre les bases (slugs pivots)
 
 | Entité | Slug | Dans MongoDB | Dans Neo4j |
 |---|---|---|---|
-| Candidat | Aucun | Document unique dans la collection personne (récupéré via _id ou en tant que profil principal du portfolio).| Non modélisé dans le graphe (le graphe est centré sur les liens entre Projets, Expériences, Formations et Compétences). |
-| Projet | `projet_slug` (ex. `smartcity-explorer`) | Champ slug unique dans la collection projets. | Propriété slug du noeud (:Projet). |
-| Compétence | `skill_slug` (ex. `mongodb`) | Champ slug unique dans la collection compétences. | Propriété slug du nœud (:Skill / :Competence). |
+| Candidat | personne_slug | Champ slug unique dans la collection personne et éléments de personne_slugs dans projets.| Propriété personne portée par les nœuds (:Experience) et (:Formation). |
+| Projet | `projet_slug (ex. rouen-portfolio)` | Champ slug unique dans la collection projets. | Propriété slug du noeud (:Projet). |
+| Compétence | `skill_slug` (ex. `mongodb`) | Champ slug unique dans la collection competences et éléments de skills_slugs / competences. | Propriété slug unique du nœud (:Competence). |
 
-**Suppression d'un projet** : que faites-vous dans chaque base ? TODO
+**Suppression d'un projet** : L'API **FastAPI** applique une stratégie de suppression synchronisée en cascade applicative via **ProjetService.delete_projet(slug)** :
 
-L'API FastAPI applique une stratégie de **suppression en cascade applicative** pour garantir la cohérence entre les deux bases :
-- **Dans MongoDB :** Suppression du document dans la collection `projets` en ciblant son `slug`.
-- **Dans Neo4j :** Exécution d'une requête Cypher avec l'instruction `DETACH DELETE` sur le nœud `(:Projet {slug: ...})`. Le mot-clé `DETACH` supprime automatiquement toutes les relations associées (liens `UTILISE` vers les compétences, `DANS_CADRE_DE`, et `SIMILAIRE` vers d'autres projets) pour éviter les nœuds orphelins dans le graphe.
+Dans MongoDB **(ProjetRepository.delete_mongo)** : Suppression du document dans la collection projets via **delete_one({"slug": slug})**. Les documents référencés dans competences et personne restent intacts.
+
+Dans Neo4j **(ProjetRepository.delete_projet_graph)** : Exécution de **MATCH (pr:Projet {slug: $slug})** **DETACH DELETE pr**. L'instruction DETACH DELETE supprime automatiquement le nœud **(:Projet)** ainsi que toutes ses relations **(UTILISE, SIMILAIRE, DANS_LE_CADRE_DE)** afin d'éviter tout arc orphelin dans le graphe.
 
 ## 6. Répartition du travail
 
 | Membre (pseudo GitHub) | Backend (couches / routes) | Frontend |
 |---|---|---|
-| TODO | TODO | `frontends/frontend-TODO/` |
+| `@Bangesigelec` | Architecture FastAPI, schémas Pydantic (`models/`), couche `Projets` & graphe de similarités (`api/projet.py`, `services/projet_service.py`, `repositories/projet_repo.py`), routes CRUD & agrégations Cypher | `frontends/frontend-Bangesigelec/` |
+| `@claramasse4` | Connexion MongoDB (`db/mongo.py`), script d'initialisation (`scripts/seed.py`), jeux de données JSON, couche `Compétences` (`api/competences.py`, `services/competences_service.py`, `repositories/competences_repo.py`) & configuration CORS | `frontends/frontend-claramasse4/` |
+| `@LucieEsigelec & idontknowwwwwww` | Connexion Neo4j (`db/neo4j.py`), couche `Personnes` (`api/personne.py`, `services/personne_service.py`, `repositories/personne_repo.py`), configuration environnement (`justfile`, CORS) & revue des Pull Requests | `frontends/frontend-LucieEsigelec/` |
