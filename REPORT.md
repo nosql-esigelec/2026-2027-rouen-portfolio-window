@@ -28,6 +28,8 @@
 
    * Vous pouvez également tester directement les requêtes API depuis l'interface Swagger : https://portfolio-lucie-fawn.vercel.app/docs *(ex. `GET /api/projects`, `GET /api/skills`, etc.)*.
 
+   - **Vidéo de test de l'API :** [Voir la vidéo de démonstration](./video%20get%20projet.mp4)
+
    <video src="./video%20get%20projet.mp4" controls width="100%"></video>
 
 2. **Via le script de vérification en local (avec le fichier `.env` configuré) :**
