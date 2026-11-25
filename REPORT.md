@@ -41,8 +41,8 @@ Chaque membre de l'équipe dispose de sa branche dédiée et de son déploiement
 
 * **Clara (`claramasse4`) :** https://portfolio-frontend-claramasse4.vercel.app/#accueil *(branche : `front-clara`)*
 
-* **Lucie (LucieEsigelec) :** https://portfoliolucie-frontend-psi.vercel.app/ *(fork : https://github.com/LucieEsigelec/portfolio_lucie)*
+* **Lucie (LucieEsigelec) :** https://portfoliolucie-frontend-psi.vercel.app/ *(fork : https://github.com/LucieEsigelec/portfolio_lucie/tree/main/frontends/frontend-LucieEsigelec)*
 
-* **Akim :** https://portfolio-akim-iwke.vercel.app/ *(fork : https://github.com/idontknowwwwwww/portfolio-Akim)*
+* **Akim :** https://portfolio-akim-iwke.vercel.app/ *(fork : https://github.com/idontknowwwwwww/portfolio-Akim/tree/main/frontends/frontend-idontknowwwwwww)*
 
 * **Bangaly :** 
