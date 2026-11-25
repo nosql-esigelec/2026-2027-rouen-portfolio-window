@@ -1,0 +1,22 @@
+[
+  { "slug": "python", "nom": "Python", "categorie": "Langage", "ordre_affichage": 1 },
+
+  { "slug": "sql", "nom": "SQL", "categorie": "Base de données", "ordre_affichage": 10 },
+  { "slug": "mongodb", "nom": "MongoDB", "categorie": "Base de données", "ordre_affichage": 11 },
+  { "slug": "neo4j", "nom": "Neo4j", "categorie": "Base de données", "ordre_affichage": 12 },
+
+  { "slug": "pyspark", "nom": "Apache Spark (PySpark)", "categorie": "Data engineering", "ordre_affichage": 20 },
+  { "slug": "hadoop", "nom": "Hadoop (HDFS / Hive)", "categorie": "Data engineering", "ordre_affichage": 21 },
+  { "slug": "talend", "nom": "Talend", "categorie": "Data engineering", "ordre_affichage": 22 },
+
+  { "slug": "power-bi", "nom": "Power BI", "categorie": "BI & visualisation", "ordre_affichage": 30 },
+
+  { "slug": "docker", "nom": "Docker", "categorie": "DevOps & automatisation", "ordre_affichage": 40 },
+
+  { "slug": "machine-learning", "nom": "Machine Learning", "categorie": "IA & analyse", "ordre_affichage": 50 },
+
+  { "slug": "leadership", "nom": "Leadership & Collectif", "categorie": "Transversale", "ordre_affichage": 70 },
+  { "slug": "gestion-pression", "nom": "Gestion de la pression", "categorie": "Transversale", "ordre_affichage": 71 },
+  { "slug": "travail-en-equipe", "nom": "Travail en équipe", "categorie": "Transversale", "ordre_affichage": 72 },
+  { "slug": "gestion-de-projet", "nom": "Gestion de projet", "categorie": "Transversale", "ordre_affichage": 73 }
+]

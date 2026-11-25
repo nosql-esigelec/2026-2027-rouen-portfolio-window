@@ -1,0 +1,76 @@
+{
+  "slug": "bangaly-fofana",
+  "prenom": "Bangaly",
+  "nom": "Fofana",
+  "titre": "Ingénieur Big Data & IA | Ex-Basketteur de Haut Niveau",
+  "bio": "Ancien basketteur de haut niveau et entrepreneur reconverti dans l'ingénierie Big Data & Intelligence Artificielle à l'ESIGELEC. J'allie la rigueur, l'esprit collectif et la résilience du terrain à la conception d'architectures distribuées et de modèles de Machine Learning.",
+  "liens": {
+    "github": "https://github.com/bfof21",
+    "linkedin": "https://www.linkedin.com/in/bangaly-fofana",
+    "email": "bangaly.fofana@groupe-esigelec.org"
+  },
+  "formations": [
+    {
+      "id": "bangaly-fofana-esigelec-2027",
+      "ecole": "ESIGELEC",
+      "diplome": "Diplôme d'ingénieur, dominante Big Data & Intelligence Artificielle (cursus Fontanet)",
+      "debut": "2024",
+      "fin": "2027",
+      "description": "Formation d'ingénieur orientée Big Data et IA : architectures distribuées, bases NoSQL et graphes, machine learning et déploiement conteneurisé.",
+      "modules": [
+        "Architectures Big Data distribuées (Hadoop, Spark)",
+        "Bases de données NoSQL & Graphes (MongoDB, Neo4j)",
+        "Machine Learning & Deep Learning",
+        "Ingénierie logicielle, API & Conteneurisation (Docker)"
+        
+      ],
+      "competences": [
+        "python",
+        "sql",
+        "pyspark",
+        "mongodb",
+        "neo4j",
+        "machine-learning",
+        "docker"
+      ]
+    }
+  ],
+  "experiences": [
+    {
+      "id": "bangaly-fofana-omen-2026",
+      "type": "stage",
+      "structure": "Omen Performance",
+      "lieu": "France",
+      "poste": "Stagiaire Data Scientist / Machine Learning (PoC)",
+      "debut": "2026",
+      "fin": "2026",
+      "missions": [
+        "Conception d'un Proof of Concept d'analyse biomécanique pour le basketball à partir des données d'accéléromètres de montres connectées (Samsung Galaxy Watch).",
+        "Traitement du signal, extraction de caractéristiques (feature engineering) et entraînement de modèles de classification des mouvements sur le terrain.",
+        "Calcul d'indicateurs de charge de travail externe (external workload) pour le suivi de la performance des athlètes."
+      ],
+      "competences": [
+        "python",
+        "machine-learning"
+      ]
+    },
+    
+    {
+      "id": "bangaly-fofana-basket-pro-2023",
+      "type": "emploi",
+      "structure": "Clubs Professionnels de Basketball (LNB / Pro A & Pro B)",
+      "lieu": "France",
+      "poste": "Basketteur Professionnel de Haut Niveau",
+      "debut": "2012",
+      "fin": "2023",
+      "missions": [
+        "Carrière sportive de haut niveau : exigence quotidienne, rigueur tactique et cohésion collective.",
+        "Analyse vidéo de performance, adaptation rapide et prise de décision sous haute pression."
+      ],
+      "competences": [
+        "leadership",
+        "gestion-pression"
+      ]
+    }
+  ]
+}

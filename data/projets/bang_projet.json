@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "bangaly-fofana-omen-basketball-ml",
+    "personne_slugs": ["bangaly-fofana"],
+    "titre": "Classification de mouvements basketball via montre connectée",
+    "resume": "Pipeline de Machine Learning exploitant les capteurs inertiels d'une Samsung Galaxy Watch pour reconnaître les actions du basketball et quantifier la charge physique externe.",
+    "contenu_md": "## Contexte & Objectif\nConception d'un Proof of Concept (PoC) d'analyse biomécanique pour le suivi de la charge physique des joueurs de basketball.\n\n## Architecture & Réalisations\n- Collecte et prétraitement des séries temporelles issues de l'accéléromètre d'une Samsung Galaxy Watch.\n- Extraction de caractéristiques fréquentielles et temporelles (feature engineering).\n- Entraînement et évaluation de modèles de classification des mouvements spécifiques (sauts, sprints, changements de direction).\n- Calcul d'indicateurs de charge de travail externe (external workload).",
+    "liens": { "github": null, "demo": null },
+    "metriques": {},
+    "skills_slugs": ["python", "machine-learning", "leadership"],
+    "date_realisation": "2026",
+    "contexte_id": "bangaly-fofana-omen-2026"
+  },
+  {
+    "slug": "bangaly-fofana-bigdata-jo-pyspark",
+    "personne_slugs": ["bangaly-fofana"],
+    "titre": "Pipeline Big Data & Prédiction des médailles olympiques",
+    "resume": "Architecture distribuée sous HDFS et PySpark pour analyser l'historique des Jeux Olympiques et prédire les chances de médailles via Spark MLlib.",
+    "contenu_md": "## Contexte & Objectif\nExploitation de données massives historiques des Jeux Olympiques afin de modéliser les facteurs de performance par nation et discipline.\n\n## Architecture & Réalisations\n- Stockage distribué sous HDFS et traitement parallèle avec PySpark.\n- Nettoyage, agrégation et création d'indicateurs historiques à grande échelle.\n- Entraînement d'un modèle de régression logistique avec Spark MLlib.\n- Restitution visuelle et tableaux de bord interactifs sur Power BI.",
+    "liens": { "github": null, "demo": null },
+    "metriques": {},
+    "skills_slugs": ["python", "pyspark", "power-bi", "machine-learning"],
+    "date_realisation": "2026",
+    "contexte_id": "bangaly-fofana-esigelec-2027"
+  },
+  {
+    "slug": "bangaly-fofana-mojix-rfid-tunnel",
+    "personne_slugs": ["bangaly-fofana"],
+    "titre": "Filtrage de tags RFID parasites par Random Forest (Projet Mojix)",
+    "resume": "Classification de signaux RSSI en tunnel logistique RFID par Random Forest et interface web de supervision.",
+    "contenu_md": "## Contexte & Objectif\nDans un tunnel de lecture RFID sur convoyeur, les ondes captent fréquemment des tags situés à proximité hors du flux réel (lectures parasites).\n\n## Architecture & Réalisations\n- Analyse exploratoire des signaux RSSI et caractéristiques spatio-temporelles de lecture.\n- Entraînement d'un classifieur Random Forest pour isoler les articles réellement en transit sur le convoyeur.\n- Développement d'une interface web de visualisation et supervision des détections.",
+    "liens": { "github": null, "demo": null },
+    "metriques": {},
+    "skills_slugs": ["python", "machine-learning", "sql"],
+    "date_realisation": "2026",
+    "contexte_id": "bangaly-fofana-esigelec-2027"
+  }
+]
